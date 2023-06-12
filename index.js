@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
+const slugify = require("slugify");
 const replaceTemplate = require("./modules/replaceTemplate");
 
 const tempOverview = fs.readFileSync(
@@ -18,6 +19,9 @@ const tempProduct = fs.readFileSync(
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
+
+const slugs = dataObj.map((el) => slugify(el.productName, { lower: true }));
+console.log(slugs);
 
 const server = http.createServer((req, res) => {
   console.log(url.parse(req.url, true));
@@ -47,7 +51,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
 
-    //not found
+    //fall back
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
